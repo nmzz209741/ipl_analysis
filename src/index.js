@@ -265,6 +265,19 @@ d3.json('./final.json').then(function (data) {
   const colorSpectrum = d3.scaleOrdinal().domain(teamsList)
     .range(d3.schemeCategory10)
 
+  const tooltip = d3.select('.svg__trendline')
+    .append('div')
+    .style('opacity', 0)
+    .attr('class', 'tooltip')
+    .style('font-size', '16px')
+    .style('background-color', '#aaa')
+    .style('padding', '0.5em')
+    .style('border-radius', '15%')
+  const mousemove = function (d) {
+    tooltip
+      .style("left", `${d3.event.pageX + 30}px`)
+      .style("top", `${d3.event.pageY + 30}px`)
+  }
   _.each(teamWise, (teamData, teamname) => {
     const linesAndDots = svg2.append('g')
       .attr('class', 'line-and-dots')
@@ -283,13 +296,26 @@ d3.json('./final.json').then(function (data) {
             .style("opacity", 1)
             .style('stroke', '10px')
         }
+        tooltip
+          .transition()
+          .duration(200)
+          .style('opacity', 1)
+        tooltip
+          .html(`<div class='teamInfo' style="color: white; font-size: 12px;"><span>${teamData[0].teamName} - ${teamData[0].title}</span></div>`)
+          .style('left', `${d3.event.pageX + 30}px`)
+          .style('top', `${d3.event.pageY + 30}px`)
       })
       .on('mouseleave', function () {
         console.log("mouse leave")
         d3.select(this).transition().duration(200)
           .style("opacity", 0.1)
-          .style('stroke', '2px')
+          .style('stroke', '2px');
+        tooltip
+          .transition()
+          .duration(200)
+          .style("opacity", 0)
       })
+      .on("mousemove", mousemove)
 
     linesAndDots.selectAll("line-circle")
       .data(teamData)
