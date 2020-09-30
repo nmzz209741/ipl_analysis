@@ -1,5 +1,18 @@
-.svg__boxplot {
+section {
   display: flex;
-  justify-content: center;
-  margin: 0 auto;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section {
+  &__title {
+    margin: 1em;
+  }
+  &__svg {
+    margin: 2em auto;
+  }
+}
+
+.teamInfo {
+  color:white;
 }

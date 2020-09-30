@@ -60,7 +60,6 @@ d3.json('./final.json').then(function (data) {
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(xScale).tickSize(0))
     .select(".domain").remove()
-
   svg.append('text')
     .attr('transform', `translate(${width/2}, ${height + margin.top + 30})`)
     .style("text-anchor", "middle")
@@ -164,6 +163,9 @@ d3.json('./final.json').then(function (data) {
     .style('opacity', 0)
     .attr('class', 'tooltip')
     .style('font-size', '16px')
+    .style('background-color', '#aaa')
+    .style('padding', '0.5em')
+    .style('border-radius', '15%')
 
   const mouseOver = d => {
     tooltip
@@ -171,7 +173,7 @@ d3.json('./final.json').then(function (data) {
       .duration(200)
       .style('opacity', 1)
     tooltip
-      .html(`<div class='teamInfo'><h3>${d.teamName} - ${d.title}</h3><h5>Points : ${d.points}</h5><h5>Year: ${d.year}</h5></div>`)
+      .html(`<div class='teamInfo' style="color: white; font-size: 12px;"><span>${d.teamName} - ${d.title}<br>Points : ${d.points}<br>Year: ${d.year}</span></div>`)
       .style('left', `${d3.event.pageX + 30}px`)
       .style('top', `${d3.event.pageY + 30}px`)
   }
