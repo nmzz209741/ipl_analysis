@@ -281,7 +281,7 @@ d3.json('./final.json').then(function (data) {
   _.each(teamWise, (teamData, teamname) => {
     const linesAndDots = svg2.append('g')
       .attr('class', 'line-and-dots')
-      .attr('transform', `translate(${(margin.left + margin.right)/2}, 0)`)
+      .attr('transform', `translate(${xScale.bandwidth()/2}, 0)`)
 
     linesAndDots.append('path')
       .datum(teamData)
