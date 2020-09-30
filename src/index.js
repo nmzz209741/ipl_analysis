@@ -23,7 +23,6 @@ d3.json('./final.json').then(function (data) {
   const quantileData = d3.nest()
     .key(d => d.title)
     .rollup(d => {
-      console.info(sortedPoints)
       const q1 = d3.quantile(sortedPoints(d), .25)
       const median = d3.quantile(sortedPoints(d), .5)
       const q3 = d3.quantile(sortedPoints(d), .75)
@@ -40,7 +39,6 @@ d3.json('./final.json').then(function (data) {
       }
     })
     .entries(allData)
-  console.info(quantileData)
 
   const quantileMaximum = Math.max(...quantileData.map(d => d.value.max))
   const quantileMinimum = Math.min(...quantileData.map(d => d.value.min))
@@ -112,6 +110,16 @@ d3.json('./final.json').then(function (data) {
     .attr('y2', d => yScale(d.value.median))
     .attr('stroke', 'grey')
     .style('width', 80)
+    .attr('class', 'median-line')
+
+  svg.selectAll('median-line')
+  .data(quantileData)
+  .enter()
+  .append('text')
+  .text(d => d.value.median)
+  .attr('x', d => (xScale(d.key) - xScale.bandwidth()/2))
+  .attr('y', d => yScale(d.value.median))
+  .style('font-size', '10px')
 
   svg.selectAll('maxLines')
     .data(quantileData)
