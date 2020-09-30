@@ -79,8 +79,8 @@ d3.json('./final.json').then(function (data) {
     .call(d3.axisLeft(yScale).ticks(5))
     .select('.domain').remove
   svg.append('text')
-    .attr('y',0 - 30)
-    .attr('x',  0 - (height / 2 + margin.top))
+    .attr('y', 0 - 30)
+    .attr('x', 0 - (height / 2 + margin.top))
     .attr('transform', `rotate(-90)`)
 
     .style("text-anchor", "middle")
@@ -200,4 +200,106 @@ d3.json('./final.json').then(function (data) {
     .on('mouseover', mouseOver)
     .on("mousemove", mousemove)
     .on('mouseleave', mouseleave)
+})
+
+let svg2 = d3.select('.svg__trendline')
+  .append('svg')
+  .attr('width', width + margin.left + margin.right)
+  .attr('height', height + margin.top + margin.bottom)
+
+svg2 = svg2.append('g')
+  .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+d3.json('./final.json').then(function (data) {
+  const allData = _.flatten(data)
+
+  const columns = d => [...new Set(d.map(g => g.year))]
+  const rows = d => d.map(d => d.won)
+
+  const maxValueData = Math.max(...rows(allData))
+  const minValueData = Math.min(...rows(allData))
+  const maxData = maxValueData
+  const minData = minValueData
+
+  const xScale = d3.scaleBand()
+    .range([0, width])
+    .domain(columns(allData))
+    .padding(.5)
+  svg2.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(xScale).tickSize(0))
+    .select(".domain").remove()
+  svg2.append('text')
+    .attr('transform', `translate(${width/2}, ${height + margin.top + 30})`)
+    .style("text-anchor", "middle")
+    .style('font-size', '20px')
+    .style('font-weight', 'bold')
+    .text("YEARS");
+
+  let yScale = d3.scaleLinear()
+    .domain([0, maxData])
+    .range([0, height]);
+
+  yScale = d3.scaleLinear()
+    .domain([minData, maxData])
+    .range([height, 0]);
+
+  svg2.append('g')
+    .call(d3.axisLeft(yScale).ticks(5))
+    .select('.domain').remove
+  svg2.append('text')
+    .attr('y', 0 - 30)
+    .attr('x', 0 - (height / 2 + margin.top))
+    .attr('transform', `rotate(-90)`)
+    .style("text-anchor", "middle")
+    .style('font-size', '20px')
+    .style('font-weight', 'bold')
+    .text("WINS");
+
+  const teamWise = _.groupBy(allData, 'title')
+  const teamsList = Object.keys(teamWise)
+  const line = d3.line()
+    .x(d => xScale(d.year))
+    .y(d => yScale(d.won))
+
+  const colorSpectrum = d3.scaleOrdinal().domain(teamsList)
+    .range(d3.schemeCategory10)
+
+  _.each(teamWise, (teamData, teamname) => {
+    const linesAndDots = svg2.append('g')
+      .attr('class', 'line-and-dots')
+      .attr('transform', `translate(${(margin.left + margin.right)/2}, 0)`)
+
+    linesAndDots.append('path')
+      .datum(teamData)
+      .attr('class', 'data-line')
+      .attr('id', `data-line-${_.findIndex(teamsList, (v,k)=> v === teamData[0].title)}`)
+      .attr('d', line)
+      .style('stroke', colorSpectrum(teamData[0].title))
+      .on("mouseover", function (d) {
+        if (d3.select(this).style("opacity") !== 1) {
+          d3.select(this).transition()
+            .duration(200)
+            .style("opacity", 1)
+            .style('stroke', '10px')
+        }
+      })
+      .on('mouseleave', function () {
+        console.log("mouse leave")
+        d3.select(this).transition().duration(200)
+          .style("opacity", 0.1)
+          .style('stroke', '2px')
+      })
+
+    linesAndDots.selectAll("line-circle")
+      .data(teamData)
+      .enter()
+      .append("circle")
+      .attr("class", "data-circle")
+      .attr("r", 5)
+      .attr("cx", d => xScale(d.year))
+      .attr("cy", d => yScale(d.won))
+      .attr('fill', d => colorSpectrum(d.title))
+
+  })
 })
