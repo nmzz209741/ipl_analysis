@@ -306,7 +306,6 @@ d3.json('./final.json').then(function (data) {
           .style('top', `${d3.event.pageY + 30}px`)
       })
       .on('mouseleave', function () {
-        console.log("mouse leave")
         d3.select(this).transition().duration(200)
           .style("opacity", 0.1)
           .style('stroke', '2px');
