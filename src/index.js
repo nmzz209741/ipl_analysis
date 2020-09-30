@@ -6,7 +6,7 @@ let margin = {
     bottom: 50,
     left: 70
   },
-  width = 1100 - margin.left - margin.right,
+  width = 1200 - margin.left - margin.right,
   height = 800 - margin.top - margin.bottom
 
 let svg = d3.select('.svg__boxplot')
@@ -61,6 +61,13 @@ d3.json('./final.json').then(function (data) {
     .call(d3.axisBottom(xScale).tickSize(0))
     .select(".domain").remove()
 
+  svg.append('text')
+    .attr('transform', `translate(${width/2}, ${height + margin.top + 30})`)
+    .style("text-anchor", "middle")
+    .style('font-size', '20px')
+    .style('font-weight', 'bold')
+    .text("TEAMS");
+
   let yScale = d3.scaleLinear()
     .domain([0, maxData])
     .range([0, height]);
@@ -72,6 +79,15 @@ d3.json('./final.json').then(function (data) {
   svg.append('g')
     .call(d3.axisLeft(yScale).ticks(5))
     .select('.domain').remove
+  svg.append('text')
+    .attr('y',0 - 30)
+    .attr('x',  0 - (height / 2 + margin.top))
+    .attr('transform', `rotate(-90)`)
+
+    .style("text-anchor", "middle")
+    .style('font-size', '20px')
+    .style('font-weight', 'bold')
+    .text("POINTS");
 
   const colorSpectrum = d3.scaleSequential()
     .interpolator(d3.interpolateInferno)
@@ -113,13 +129,13 @@ d3.json('./final.json').then(function (data) {
     .attr('class', 'median-line')
 
   svg.selectAll('median-line')
-  .data(quantileData)
-  .enter()
-  .append('text')
-  .text(d => d.value.median)
-  .attr('x', d => (xScale(d.key) - xScale.bandwidth()/2))
-  .attr('y', d => yScale(d.value.median))
-  .style('font-size', '10px')
+    .data(quantileData)
+    .enter()
+    .append('text')
+    .text(d => d.value.median)
+    .attr('x', d => (xScale(d.key) - xScale.bandwidth() / 2))
+    .attr('y', d => yScale(d.value.median))
+    .style('font-size', '10px')
 
   svg.selectAll('maxLines')
     .data(quantileData)
