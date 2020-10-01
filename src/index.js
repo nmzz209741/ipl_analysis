@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import _ from 'lodash'
 let margin = {
     top: 10,
-    right: 30,
+    right: 70,
     bottom: 50,
     left: 70
   },
@@ -326,5 +326,40 @@ d3.json('./final.json').then(function (data) {
       .attr("cy", d => yScale(d.won))
       .attr('fill', d => colorSpectrum(d.title))
 
+    const legend = svg2.append('g')
+      .attr('class', 'legend item')
+      .attr('transform', `translate(${width - xScale.bandwidth(), margin.top})`)
+
+    legend.append('rect')
+      .datum(teamData)
+      .attr('class', 'legend-item-box')
+      .attr('x', width - xScale.bandwidth() - margin.left)
+      .attr('width', "16px")
+      .attr('y', margin.top + (20 * (_.findIndex(teamsList, (v, k) => v === teamData[0].title))))
+      .attr('height', "16px")
+      .attr('fill', colorSpectrum(teamData[0].title))
+      .attr('rx', 4)
+      .on('mouseover', function (d) {
+        const id = `#data-line-${_.findIndex(teamsList, v => v === d[0].title)}`
+        if (d3.select(id).style("opacity") !== 1) {
+          d3.select(id).transition()
+            .duration(200)
+            .style("opacity", 1)
+            .style('stroke', '10px')
+        }
+      })
+      .on('mouseleave', function (d) {
+        const id = `#data-line-${_.findIndex(teamsList, v => v === d[0].title)}`
+        d3.select(id).transition().duration(200)
+          .style("opacity", 0.1)
+          .style('stroke', '2px');
+      })
+
+    legend.append('text')
+      .datum(teamData)
+      .text(d => d[0].title)
+      .attr('x', width - xScale.bandwidth() - margin.left + 20)
+      .attr('y', 13 + margin.top + (20 * (_.findIndex(teamsList, (v, k) => v === teamData[0].title))))
+      .style('font-size', '14px')
   })
 })
